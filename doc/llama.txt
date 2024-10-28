@@ -1,4 +1,48 @@
-llama.vim                                                          *llama*
-==========================================================================
+llama.vim                                                                *llama*
+================================================================================
 
-vim:tw=78:ts=8:ft=help:norl:
+LLM-based text completion using llama.cpp
+
+Requires:
+
+- neovim or vim
+- curl
+- llama.cpp server instance
+- FIM-compatible model
+
+Sample config:
+
+- Tab       - accept the current suggestion
+- Shift+Tab - accept just the first line of the suggestion
+- Ctrl+F    - toggle FIM completion manually
+
+Start the llama.cpp server with a FIM-compatible model. For example:
+
+$ llama-server \
+        -m {model.gguf} --port 8012 -ngl 99 -fa -dt 0.1 \
+        --ubatch-size 512 --batch-size 1024 --cache-reuse 256
+
+--batch-size [512, model max context]
+
+Adjust the batch size to control how much of the provided local context will
+be used during the inference lower values will use smaller part of the context
+around the cursor, which will result in faster processing.
+
+--ubatch-size [64, 2048]
+
+Chunks the batch into smaller chunks for faster processing depends on the
+specific hardware. Use llama-bench to profile and determine the best size.
+
+--cache-reuse (ge:llama_config.n_predict, 1024]
+
+This should be either 0 (disabled) or strictly larger than
+g:llama_config.n_predict using non-zero value enables context reuse on the
+server side which dramatically improves the performance at large contexts. A
+value of 256 should be good for all cases.
+
+More info:
+
+  - https://github.com/ggml-org/llama.vim
+  - https://github.com/ggerganov/llama.cpp/pull/9787
+
+vim:tw=80:ts=4:ft=help:norl:
