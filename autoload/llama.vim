@@ -481,7 +481,7 @@ function! llama#fim(is_auto) abort
             \ })
     elseif s:ghost_text_vim
         let s:current_job = job_start(l:curl_command, {
-            \ 'out_cb': function('s:fim_on_stdout', [s:pos_x, s:pos_y, a:is_auto]),
+            \ 'out_cb':    function('s:fim_on_stdout', [s:pos_x, s:pos_y, a:is_auto]),
             \ 'exit_cb':   function('s:fim_on_exit')
             \ })
     endif
@@ -559,10 +559,6 @@ function! s:fim_on_stdout(pos_x, pos_y, is_auto, job_id, data, event = v:null)
         let l:raw = a:data
     endif
 
-    if len(l:raw) == 0
-        return
-    endif
-
     if a:pos_x != col('.') - 1 || a:pos_y != line('.')
         return
     endif
@@ -572,18 +568,21 @@ function! s:fim_on_stdout(pos_x, pos_y, is_auto, job_id, data, event = v:null)
         return
     endif
 
+    if v:shell_error || len(l:raw) == 0
+        let l:raw = json_encode({'content': '  llama.vim : cannot reach llama.cpp server. (:help llama)'})
+
+        let s:can_accept = v:false
+    endif
+
+    if len(l:raw) == 0
+        return
+    endif
+
     let s:pos_x = a:pos_x
     let s:pos_y = a:pos_y
 
     let s:can_accept = v:true
     let l:has_info   = v:false
-
-    if s:can_accept && v:shell_error
-        if !a:is_auto
-            call add(s:content, "<| curl error: is the server on? |>")
-        endif
-        let s:can_accept = v:false
-    endif
 
     let l:n_prompt    = 0
     let l:t_prompt_ms = 1.0
@@ -703,6 +702,8 @@ function! s:fim_on_stdout(pos_x, pos_y, is_auto, job_id, data, event = v:null)
     if s:ghost_text_nvim
         let l:id_vt_fim = nvim_create_namespace('vt_fim')
     endif
+
+    let l:info = ''
 
     " construct the info message
     if g:llama_config.show_info > 0 && l:has_info
