@@ -702,25 +702,25 @@ function! s:fim_on_stdout(pos_x, pos_y, is_auto, job_id, data, event = v:null)
         let l:new_suffix = s:content[0]
         if !empty(l:new_suffix)
             call prop_add(s:pos_y, s:pos_x + 1, {
-                        \ 'type': s:hlgroup_hint,
-                        \ 'text': l:new_suffix
-                        \ })
+                \ 'type': s:hlgroup_hint,
+                \ 'text': l:new_suffix
+                \ })
         endif
         for line in s:content[1:]
             call prop_add(s:pos_y, 0, {
-                        \ 'type': s:hlgroup_hint,
-                        \ 'text': line,
-                        \ 'text_padding_left': s:get_indent(line),
-                        \ 'text_align': 'below'
-                        \ })
+                \ 'type': s:hlgroup_hint,
+                \ 'text': line,
+                \ 'text_padding_left': s:get_indent(line),
+                \ 'text_align': 'below'
+                \ })
         endfor
         if !empty(l:info)
             call prop_add(s:pos_y, 0, {
-                        \ 'type': s:hlgroup_info,
-                        \ 'text': l:info,
-                        \ 'text_padding_left': col('$'),
-                        \ 'text_wrap': 'truncate'
-                        \ })
+                \ 'type': s:hlgroup_info,
+                \ 'text': l:info,
+                \ 'text_padding_left': col('$'),
+                \ 'text_wrap': 'truncate'
+                \ })
         endif
     endif
 
