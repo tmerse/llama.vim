@@ -36,6 +36,8 @@ brew install llama.cpp
 
 Either build from source or use the latest binaries: https://github.com/ggerganov/llama.cpp/releases
 
+### llama.cpp settings
+
 Here are recommended settings, depending on the amount of VRAM that you have:
 
 - More than 16GB VRAM:
@@ -57,6 +59,10 @@ Here are recommended settings, depending on the amount of VRAM that you have:
       --port 8012 -ngl 99 -fa -ub 1024 -b 1024 -dt 0.1 \
       --cache-reuse 256
   ```
+
+### Recommended LLMs
+
+The plugin requires FIM-compatible models: [HF collection](https://huggingface.co/collections/ggml-org/llamavim-6720fece33898ac10544ecf9)
 
 ## Examples
 
