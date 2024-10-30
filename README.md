@@ -4,6 +4,10 @@ Local LLM-assisted text completion.
 
 <img width="485" alt="image" src="https://github.com/user-attachments/assets/a950e38c-3b3f-4c46-94fe-0d6e0f790fc6">
 
+---
+
+![llama vim-swift](https://github.com/user-attachments/assets/206c8399-ff73-495d-ba67-65725138c021)
+
 ## Features
 
 - Auto-suggest on cursor movement in `Insert` mode
@@ -13,7 +17,7 @@ Local LLM-assisted text completion.
 - Control max text generation time
 - Configure scope of context around the cursor
 - Ring context with chunks from open and edited files and yanked text
-- Supports very large contexts even on low-end hardware via smart context reuse
+- [Supports very large contexts even on low-end hardware via smart context reuse](https://github.com/ggerganov/llama.cpp/pull/9787)
 - Display performance stats
 
 ## Installation
