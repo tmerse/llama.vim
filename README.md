@@ -83,3 +83,10 @@ The orange text is the generated suggestion. The green text contains performance
 https://github.com/user-attachments/assets/1f1eb408-8ac2-4bd2-b2cf-6ab7d6816754
 
 Demonstrates that the global context is accumulated and maintained across different files and showcases the overall latency when working in a large codebase.
+
+## Implementation details
+
+The plugin aims to be very simple and lightweight and at the same time to provide high-quality and performant local FIM completions, even on consumer-grade hardware. Read more deatils how this is achieved in the following links:
+
+- Initial implementation and techincal description: https://github.com/ggerganov/llama.cpp/pull/9787
+- Classic Vim support: https://github.com/ggerganov/llama.cpp/pull/9995
