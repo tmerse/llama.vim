@@ -86,7 +86,7 @@ Demonstrates that the global context is accumulated and maintained across differ
 
 ## Implementation details
 
-The plugin aims to be very simple and lightweight and at the same time to provide high-quality and performant local FIM completions, even on consumer-grade hardware. Read more deatils how this is achieved in the following links:
+The plugin aims to be very simple and lightweight and at the same time to provide high-quality and performant local FIM completions, even on consumer-grade hardware. Read more on how this is achieved in the following links:
 
 - Initial implementation and techincal description: https://github.com/ggerganov/llama.cpp/pull/9787
 - Classic Vim support: https://github.com/ggerganov/llama.cpp/pull/9995
