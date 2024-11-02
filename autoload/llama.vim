@@ -534,11 +534,12 @@ function! s:fim_on_stdout(pos_x, pos_y, is_auto, job_id, data, event = v:null)
         return
     endif
 
-    if s:job_error || len(l:raw) == 0
-        let l:raw = json_encode({'content': '  llama.vim : cannot reach llama.cpp server. (:help llama)'})
+    " TODO: this does not seem to work as expected, so disabling for now
+    "if s:job_error || len(l:raw) == 0
+    "    let l:raw = json_encode({'content': '  llama.vim : cannot reach llama.cpp server. (:help llama)'})
 
-        let s:can_accept = v:false
-    endif
+    "    let s:can_accept = v:false
+    "endif
 
     if len(l:raw) == 0
         return
