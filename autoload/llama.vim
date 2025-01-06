@@ -586,23 +586,15 @@ function! s:insert_cache(key, value)
         let l:hash = l:keys[rand() % len(l:keys)]
         call remove(g:result_cache, l:hash)
     endif
-    let g:result_cache[a:key] = a:value
+    " put just the raw content in the cache without metrics
+    let l:parsed_value = json_decode(a:value)
+    let l:stripped_content = get(l:parsed_value, 'content', '')
+    let g:result_cache[a:key] = json_encode({'content': l:stripped_content})
 endfunction
 
 " callback that processes the FIM result from the server and displays the suggestion
 function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, event = v:null)
-    " Retrieve the FIM result from cache
-    if a:cache && has_key(g:result_cache, a:hash)
-        let l:raw = get(g:result_cache, a:hash)
-    else
-        if s:ghost_text_nvim
-            let l:raw = join(a:data, "\n")
-        elseif s:ghost_text_vim
-            let l:raw = a:data
-        endif
-        call s:insert_cache(a:hash, l:raw)
-    endif
-
+    " make sure cursor position hasn't changed since fim_on_stdout was triggered
     if a:pos_x != col('.') - 1 || a:pos_y != line('.')
         return
     endif
@@ -610,6 +602,19 @@ function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, even
     " show the suggestion only in insert mode
     if mode() !=# 'i'
         return
+    endif
+
+    " Retrieve the FIM result from cache
+    if a:cache && has_key(g:result_cache, a:hash)
+        let l:raw = get(g:result_cache, a:hash)
+        let l:is_cached = v:true
+    else
+        if s:ghost_text_nvim
+            let l:raw = join(a:data, "\n")
+        elseif s:ghost_text_vim
+            let l:raw = a:data
+        endif
+        let l:is_cached = v:false
     endif
 
     " TODO: this does not seem to work as expected, so disabling for now
@@ -621,6 +626,10 @@ function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, even
 
     if len(l:raw) == 0
         return
+    endif
+
+    if !l:is_cached
+        call s:insert_cache(a:hash, l:raw)
     endif
 
     let s:pos_x = a:pos_x
@@ -668,6 +677,11 @@ function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, even
             let l:n_predict    = get(l:timings, 'predicted_n', 0)
             let l:t_predict_ms = get(l:timings, 'predicted_ms', 1)
             let l:s_predict    = get(l:timings, 'predicted_per_second', 0)
+        endif
+
+        " if response was pulled from cache
+        if l:is_cached
+            let l:has_info = v:true
         endif
     endif
 
@@ -758,6 +772,12 @@ function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, even
             let l:info = printf("%s | WARNING: the context is full: %d / %d, increase the server context size or reduce g:llama_config.ring_n_chunks",
                 \ g:llama_config.show_info == 2 ? l:prefix : 'llama.vim',
                 \ l:n_cached, l:n_ctx
+                \ )
+        elseif l:is_cached
+            let l:info = printf("%s | C: %d / %d, | t: %.2f ms",
+                \ g:llama_config.show_info == 2 ? l:prefix : 'llama.vim',
+                \ len(keys(g:result_cache)), g:llama_config.max_cache_keys,
+                \ 1000.0 * reltimefloat(reltime(s:t_fim_start))
                 \ )
         else
             let l:info = printf("%s | c: %d / %d, r: %d / %d, e: %d, q: %d / 16 | p: %d (%.2f ms, %.2f t/s) | g: %d (%.2f ms, %.2f t/s) | t: %.2f ms",
