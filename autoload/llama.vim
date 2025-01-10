@@ -445,32 +445,33 @@ function! llama#fim(is_auto, cache) abort
     endif
     let s:job_error = 0
 
-    " Construct hash from prefix, prompt, and suffix
-    let l:request_context = l:prefix . l:prompt . l:suffix
+    " Construct hash from prefix, prompt, and suffix with separators
+    let l:request_context = l:prefix . 'Î' . l:prompt . 'Î' . l:suffix
     let l:hash = sha256(l:request_context)
 
     if a:cache
         " Check if the completion is cached
-        let l:cached_completion = get(g:result_cache, l:hash , v:null)
+        let l:cached_completion = get(g:result_cache, l:hash, v:null)
 
         " ... or if there is a cached completion nearby (10 characters behind)
         " Looks at the previous 10 characters to see if a completion is cached. If one is found at (x,y)
         " then it checks that the characters typed after (x,y) match up with the cached completion result.
         if l:cached_completion == v:null
-            let l:past_text = l:prefix . l:prompt
+            let l:past_text = l:prefix . 'Î' . l:prompt
             for i in range(10)
-                let l:hash_txt = l:past_text[:-(2+i)] . l:suffix
+                let l:removed_section = l:past_text[-(1 + i):]
+                let l:hash_txt = l:past_text[:-(2 + i)] . 'Î' . l:suffix
                 let l:temp_hash = sha256(l:hash_txt)
                 if has_key(g:result_cache, l:temp_hash)
                     let l:temp_cached_completion = get(g:result_cache, l:temp_hash)
-                    if  l:temp_cached_completion == ""
+                    if l:temp_cached_completion == ""
                         break
                     endif
                     let l:response = json_decode(l:temp_cached_completion)
-                    if l:response['content'][0:len(l:past_text[-(1+i):])-1] !=# l:past_text[-(1+i):]
+                    if l:response['content'][0:i] !=# l:removed_section
                         break
                     endif
-                    let l:response['content']  = l:response['content'][i+1:]
+                    let l:response['content'] = l:response['content'][i + 1:]
                     let g:result_cache[l:hash] = json_encode(l:response)
                     let l:cached_completion = g:result_cache[l:hash]
                     break
@@ -594,18 +595,8 @@ endfunction
 
 " callback that processes the FIM result from the server and displays the suggestion
 function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, event = v:null)
-    " make sure cursor position hasn't changed since fim_on_stdout was triggered
-    if a:pos_x != col('.') - 1 || a:pos_y != line('.')
-        return
-    endif
-
-    " show the suggestion only in insert mode
-    if mode() !=# 'i'
-        return
-    endif
-
-    " Retrieve the FIM result from cache
     if a:cache && has_key(g:result_cache, a:hash)
+        " retrieve the FIM result from cache
         let l:raw = get(g:result_cache, a:hash)
         let l:is_cached = v:true
     else
@@ -617,20 +608,32 @@ function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, even
         let l:is_cached = v:false
     endif
 
+    " ignore empty results
+    if len(l:raw) == 0
+        return
+    endif
+
+    " save the FIM result to the cache
+    if !l:is_cached
+        call s:insert_cache(a:hash, l:raw)
+    endif
+
+    " make sure cursor position hasn't changed since fim_on_stdout was triggered
+    if a:pos_x != col('.') - 1 || a:pos_y != line('.')
+        return
+    endif
+
+    " show the suggestion only in insert mode
+    if mode() !=# 'i'
+        return
+    endif
+
     " TODO: this does not seem to work as expected, so disabling for now
     "if s:job_error || len(l:raw) == 0
     "    let l:raw = json_encode({'content': '  llama.vim : cannot reach llama.cpp server. (:help llama)'})
 
     "    let s:can_accept = v:false
     "endif
-
-    if len(l:raw) == 0
-        return
-    endif
-
-    if !l:is_cached
-        call s:insert_cache(a:hash, l:raw)
-    endif
 
     let s:pos_x = a:pos_x
     let s:pos_y = a:pos_y
