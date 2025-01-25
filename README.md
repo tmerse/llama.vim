@@ -138,7 +138,7 @@ The plugin requires FIM-compatible models: [HF collection](https://huggingface.c
 
 <img width="1512" alt="image" src="https://github.com/user-attachments/assets/0ccb93c6-c5c5-4376-a5a3-cc99fafc5eef">
 
-The orange text is the generated suggestion. The green text contains performance stats for the FIM request: the currently used context is `15186` tokens and the maximum is `32768`. There are `30` chunks in the ring buffer with extra context (out of `64`). So far, `1` chunk has been evicted in the current session and there are `0` chunks in queue. The newly computed prompt tokens for this request were `260` and the generated tokens were `25`. It took `1245 ms` to generate this suggestion after entering the letter `c` on the current line.
+The orange text is the generated suggestion. The green text contains performance stats for the FIM request: the currently used context is `15186` tokens and the maximum is `32768`. There are `30` chunks in the ring buffer with extra context (out of `64`). So far, `1` chunk has been evicted in the current session and there are `0` chunks in queue. The newly computed prompt tokens for this request were `260` and the generated tokens were `24`. It took `1245 ms` to generate this suggestion after entering the letter `c` on the current line.
 
 ### Using `llama.vim` on M2 Ultra with `Qwen2.5-Coder 7B Q8_0`:
 
