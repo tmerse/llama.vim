@@ -87,8 +87,12 @@ The plugin requires a [llama.cpp](https://github.com/ggerganov/llama.cpp) server
 
 ```bash
 brew install llama.cpp
+```
 
-# for extra performance, disable the GPU's wired collector (https://github.com/ggerganov/llama.cpp/pull/10119)
+> [!TIP]
+> For extra performance, disable the GPU's wired memory collector (https://github.com/ggerganov/llama.cpp/pull/10119)
+
+```bash
 sudo sysctl iogpu.disable_wired_collector=1
 ```
 
