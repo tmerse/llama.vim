@@ -596,7 +596,7 @@ function! llama#fim_cancel()
 
     " remove the mappings
     "silent! iunmap <buffer> <Tab>
-    silent! iunmap <buffer> <C-m>
+    silent! iunmap <buffer> <C-l>
     "silent! iunmap <buffer> <S-Tab>
     silent! iunmap <buffer> <Esc>
 endfunction
@@ -862,7 +862,7 @@ function! s:fim_on_stdout(hash, cache, pos_x, pos_y, is_auto, job_id, data, even
 
     " setup accept shortcuts
     "inoremap <buffer> <Tab>   <C-O>:call llama#fim_accept('full')<CR>
-    inoremap <buffer> <C-m>   <C-O>:call llama#fim_accept('full')<CR>
+    inoremap <buffer> <C-l>   <C-O>:call llama#fim_accept('full')<CR>
     "inoremap <buffer> <S-Tab> <C-O>:call llama#fim_accept('line')<CR>
     inoremap <buffer> <C-B>   <C-O>:call llama#fim_accept('word')<CR>
 
