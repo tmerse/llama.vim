@@ -596,7 +596,7 @@ function! llama#fim_cancel()
 
     " remove the mappings
     "silent! iunmap <buffer> <Tab>
-    silent! iunmap <buffer> <C-l>
+    "silent! iunmap <buffer> <C-l>
     "silent! iunmap <buffer> <S-Tab>
     silent! iunmap <buffer> <Esc>
 endfunction
